@@ -97,7 +97,12 @@
       }
 
       // Redirigir al listado
-      window.location.href = "PAGOS ACTIVOS.html";
+      // Guardar mensaje temporal en localStorage
+localStorage.setItem("mensajeExito", "Nota guardada correctamente ✅");
+
+// Redirigir
+window.location.href = "PAGOS ACTIVOS.html";
+
     }
 
     // Si se abre con ?folio=#

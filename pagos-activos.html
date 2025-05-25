@@ -59,19 +59,32 @@
       contenedor.innerHTML = "";
       data.forEach(nota => {
         contenedor.innerHTML += `
-  <div class="nota">
-    <strong>${nota.titulo}</strong><br>
-    <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
-    <div>${nota.contenido}</div>
-    <br>
-    <button onclick="window.location.href='index.html?folio=${nota.folio}'">Editar</button>
-  </div>
-`;
+          <div class="nota">
+            <strong>${nota.titulo}</strong><br>
+            <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
+            <div>${nota.contenido}</div>
+            <br>
+            <button data-folio="${nota.folio}" class="editar-btn">Editar</button>
+          </div>
+        `;
+      });
 
+      document.querySelectorAll(".editar-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const folio = btn.getAttribute("data-folio");
+          window.location.href = `index.html?folio=${folio}`;
+        });
       });
     }
 
     cargarNotas();
+
+const mensaje = localStorage.getItem("mensajeExito");
+if (mensaje) {
+  alert(mensaje); // Puedes reemplazar por un banner si prefieres
+  localStorage.removeItem("mensajeExito");
+}
+
   </script>
 </body>
 </html>
