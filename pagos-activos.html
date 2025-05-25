@@ -83,13 +83,13 @@ const { data, error } = await supabase
     `;
   });
 
-  // ✅ Mueve aquí los listeners
-  document.querySelectorAll(".editar-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const folio = btn.getAttribute("data-folio");
-      window.location.href = `index.html?folio=${folio}`;
-    });
+document.querySelectorAll(".editar-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const folio = btn.getAttribute("data-folio");
+    window.location.href = `crear-nota.html?folio=${folio}`;
   });
+});
+
 
 document.querySelectorAll(".eliminar-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
