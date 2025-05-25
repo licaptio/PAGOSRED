@@ -1,47 +1,119 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AGENDA DE PAGOS</title>
+  <meta charset="UTF-8">
+  <title>Resumen de Notas Activas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #ffeaea;
+      background: #fff5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      min-height: 100vh;
+    }
+
+    .izquierda {
+      flex: 2;
+      padding: 20px;
+    }
+
+    .derecha {
+      flex: 1;
+      background: #ffeaea;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
+      border-left: 2px solid #C0392B;
     }
+
     h1 {
       color: #C0392B;
-      margin-bottom: 40px;
-      font-size: 2.2em;
+      text-align: center;
     }
-    a button {
-      display: block;
-      width: 220px;
+
+    .tarjeta {
+      background: white;
+      border-left: 5px solid #C0392B;
+      border-radius: 6px;
       padding: 15px;
-      margin: 10px 0;
-      font-size: 1em;
-      background-color: #C0392B;
+      margin: 10px auto;
+      max-width: 500px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .derecha a button {
+      background: #C0392B;
       color: white;
       border: none;
+      padding: 12px 20px;
+      margin: 10px 0;
       border-radius: 8px;
+      font-size: 1em;
+      width: 100%;
+      max-width: 200px;
       cursor: pointer;
       transition: background 0.3s;
     }
-    a button:hover {
+
+    .derecha a button:hover {
       background-color: #96281B;
     }
   </style>
 </head>
 <body>
-  <h1>AGENDA DE PAGOS</h1>
-<a href="crear-nota.html"><button>➕ Crear Nota</button></a>
-  <a href="pagos-activos.html"><button>📄 Ver Notas Activas</button></a>
-  <a href="pagos-archivados.html"><button>📦 Ver Archivadas</button></a>
+  <div class="izquierda">
+    <h1>RESUMEN DE NOTAS ACTIVAS</h1>
+    <div id="contenedorResumen">Cargando títulos...</div>
+  </div>
+
+  <div class="derecha">
+    <a href="index.html"><button>🏠 Menú</button></a>
+    <a href="crear-nota.html"><button>➕ Crear Nota</button></a>
+    <a href="pagos-activos.html"><button>📄 Ver Detalle</button></a>
+    <a href="pagos-archivados.html"><button>📦 Archivadas</button></a>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      'https://cvpbtjlupswbyxenugpz.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2cGJ0amx1cHN3Ynl4ZW51Z3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3MDIxOTQsImV4cCI6MjA2MzI3ODE5NH0.iiJsYM3TtaGPdeCtPcEXwAz3LfFc1uJGECEvOErvrqY'
+    );
+
+    const contenedor = document.getElementById("contenedorResumen");
+
+    async function cargarResumen() {
+      const { data, error } = await supabase
+        .from("notas")
+        .select("titulo")
+        .eq("archivada", false)
+        .order("fecha", { ascending: false });
+
+      if (error) {
+        contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar el resumen.</p>";
+        console.error(error);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        contenedor.innerHTML = "<p>No hay notas activas.</p>";
+        return;
+      }
+
+      contenedor.innerHTML = "";
+      data.forEach(nota => {
+        contenedor.innerHTML += `<div class="tarjeta">${nota.titulo}</div>`;
+      });
+    }
+
+    cargarResumen();
+  </script>
 </body>
 </html>
