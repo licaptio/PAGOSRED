@@ -30,6 +30,13 @@
 </head>
 <body>
   <h1>ACTIVOS PAGOS</h1>
+<div style="text-align: center; margin-bottom: 20px;">
+  <a href="index.html"><button style="margin-right:10px;">➕ Nueva Nota</button></a>
+  <a href="pagos-archivados.html"><button>📦 Ver Archivadas</button></a>
+</div>
+
+
+
   <div id="contenedorNotas">Cargando...</div>
 
   <script type="module">
@@ -43,7 +50,11 @@
     const contenedor = document.getElementById("contenedorNotas");
 
 async function cargarNotas() {
-  const { data, error } = await supabase.from("notas").select("*").order("fecha", { ascending: false });
+const { data, error } = await supabase
+  .from("notas")
+  .select("*")
+  .eq("archivada", false)
+  .order("fecha", { ascending: false });
 
   if (error) {
     contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar notas.</p>";
