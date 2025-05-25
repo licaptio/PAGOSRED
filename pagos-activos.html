@@ -42,52 +42,59 @@
 
     const contenedor = document.getElementById("contenedorNotas");
 
-    async function cargarNotas() {
-      const { data, error } = await supabase.from("notas").select("*").order("fecha", { ascending: false });
+async function cargarNotas() {
+  const { data, error } = await supabase.from("notas").select("*").order("fecha", { ascending: false });
 
-      if (error) {
-        contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar notas.</p>";
-        console.error(error);
-        return;
-      }
+  if (error) {
+    contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar notas.</p>";
+    console.error(error);
+    return;
+  }
 
-      if (!data || data.length === 0) {
-        contenedor.innerHTML = "<p>No hay notas registradas.</p>";
-        return;
-      }
+  if (!data || data.length === 0) {
+    contenedor.innerHTML = "<p>No hay notas registradas.</p>";
+    return;
+  }
 
-      contenedor.innerHTML = "";
-data.forEach(nota => {
-  contenedor.innerHTML += `
-    <div class="nota">
-      <strong>${nota.titulo}</strong><br>
-      <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
-      <div>${nota.contenido}</div>
-      <br>
-      <button data-folio="${nota.folio}" class="editar-btn">Editar</button>
-      <button data-folio="${nota.folio}" class="eliminar-btn" style="margin-left: 10px; background:#aaa;">Eliminar</button>
-    </div>
-  `;
-});
-
-
-document.querySelectorAll(".eliminar-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const folio = btn.getAttribute("data-folio");
-    const confirmacion = confirm(`¿Estás seguro de eliminar la nota con folio ${folio}?`);
-    if (confirmacion) {
-      const { error } = await supabase.from("notas").delete().eq("folio", folio);
-      if (error) {
-        alert("❌ Error al eliminar la nota");
-        console.error(error);
-      } else {
-        alert("🗑️ Nota eliminada correctamente");
-        location.reload();
-      }
-    }
+  contenedor.innerHTML = "";
+  data.forEach(nota => {
+    contenedor.innerHTML += `
+      <div class="nota">
+        <strong>${nota.titulo}</strong><br>
+        <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
+        <div>${nota.contenido}</div>
+        <br>
+        <button data-folio="${nota.folio}" class="editar-btn">Editar</button>
+        <button data-folio="${nota.folio}" class="eliminar-btn" style="margin-left: 10px; background:#e74c3c;">Eliminar</button>
+      </div>
+    `;
   });
-});
-    }
+
+  // ✅ Mueve aquí los listeners
+  document.querySelectorAll(".editar-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const folio = btn.getAttribute("data-folio");
+      window.location.href = `index.html?folio=${folio}`;
+    });
+  });
+
+  document.querySelectorAll(".eliminar-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const folio = btn.getAttribute("data-folio");
+      const confirmacion = confirm(`¿Estás seguro de eliminar la nota con folio ${folio}?`);
+      if (confirmacion) {
+        const { error } = await supabase.from("notas").delete().eq("folio", folio);
+        if (error) {
+          alert("❌ Error al eliminar la nota");
+          console.error(error);
+        } else {
+          alert("🗑️ Nota eliminada correctamente");
+          location.reload();
+        }
+      }
+    });
+  });
+}
 
     cargarNotas();
 
