@@ -80,19 +80,24 @@ async function cargarNotas() {
     });
   });
 
-  document.querySelectorAll(".eliminar-btn").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const folio = btn.getAttribute("data-folio");
-      const confirmacion = confirm(`¿Estás seguro de eliminar la nota con folio ${folio}?`);
-      if (confirmacion) {
-        const { error } = await supabase.from("notas").delete().eq("folio", folio);
-        if (error) {
-          alert("❌ Error al eliminar la nota");
-          console.error(error);
-        } else {
-          alert("🗑️ Nota eliminada correctamente");
-          location.reload();
+document.querySelectorAll(".eliminar-btn").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const folio = btn.getAttribute("data-folio");
+    const confirmacion = confirm(`¿Estás seguro de eliminar la nota con folio ${folio}?`);
+    if (confirmacion) {
+      const { error } = await supabase.from("notas").delete().eq("folio", folio);
+      if (error) {
+        alert("❌ Error al eliminar la nota");
+        console.error(error);
+      } else {
+        alert("🗑️ Nota eliminada correctamente");
+        location.reload();
+      }
+    }
+  });
+});
 
+// ✅ Aquí va el bloque archivar, separado
 document.querySelectorAll(".archivar-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     const folio = btn.getAttribute("data-folio");
