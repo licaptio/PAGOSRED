@@ -63,17 +63,54 @@
 
       contenedor.innerHTML = "";
       data.forEach(nota => {
-        contenedor.innerHTML += `
-          <div class="nota">
-            <strong>${nota.titulo}</strong><br>
-            <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
-            <div>${nota.contenido}</div>
-          </div>
-        `;
+contenedor.innerHTML += `
+  <div class="nota">
+    <strong>${nota.titulo}</strong><br>
+    <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
+    <div>${nota.contenido}</div><br>
+    <button data-folio="${nota.folio}" class="desarchivar-btn" style="background:#27ae60; color:white; margin-right: 10px;">Desarchivar</button>
+    <button data-folio="${nota.folio}" class="eliminar-btn" style="background:#e74c3c; color:white;">Eliminar</button>
+  </div>
+`;
+
       });
     }
 
     cargarNotas();
+document.addEventListener("click", async (e) => {
+  const folio = e.target.getAttribute("data-folio");
+  if (e.target.classList.contains("desarchivar-btn")) {
+    const confirmacion = confirm(`¿Desarchivar la nota con folio ${folio}?`);
+    if (confirmacion) {
+      const { error } = await supabase.from("notas").update({ archivada: false }).eq("folio", folio);
+      if (error) {
+        alert("❌ Error al desarchivar");
+        console.error(error);
+      } else {
+        alert("✅ Nota desarchivada");
+        location.reload();
+      }
+    }
+  }
+
+  if (e.target.classList.contains("eliminar-btn")) {
+    const confirmacion = confirm(`¿Eliminar permanentemente la nota con folio ${folio}?`);
+    if (confirmacion) {
+      const { error } = await supabase.from("notas").delete().eq("folio", folio);
+      if (error) {
+        alert("❌ Error al eliminar");
+        console.error(error);
+      } else {
+        alert("🗑️ Nota eliminada");
+        location.reload();
+      }
+    }
+  }
+});
+
+
+
+
   </script>
 </body>
 </html>
