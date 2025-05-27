@@ -20,7 +20,7 @@
       border-left: 5px solid #C0392B;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
-      max-width: 600px;
+      max-width: 900px;
       margin: 20px auto;
     }
     .nota input, .nota textarea {
@@ -137,16 +137,35 @@ window.location.href = "pagos-activos.html";
   const textarea = document.getElementById('contenido');
 
   function autoExpand(element) {
-    element.style.height = 'auto'; // Reinicia altura
-    element.style.height = (element.scrollHeight) + 'px'; // Ajusta según contenido
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
   }
 
   textarea.addEventListener('input', () => autoExpand(textarea));
-  textarea.addEventListener('paste', () => setTimeout(() => autoExpand(textarea), 10));
 
-  // Ajuste inicial por si se carga con contenido (edición)
+  textarea.addEventListener('paste', (event) => {
+    event.preventDefault();
+    const text = (event.clipboardData || window.clipboardData).getData('text');
+
+    // Reemplaza tabulaciones y múltiples espacios por un solo espacio
+    const limpio = text.replace(/\t+/g, ' ').replace(/ +/g, ' ');
+
+    // Inserta el texto limpio en la posición actual
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const before = textarea.value.substring(0, start);
+    const after = textarea.value.substring(end);
+
+    textarea.value = before + limpio + after;
+    textarea.selectionStart = textarea.selectionEnd = start + limpio.length;
+
+    autoExpand(textarea);
+  });
+
+  // Ajuste inicial al cargar
   window.addEventListener('load', () => autoExpand(textarea));
 </script>
+
 
 </body>
 </html>
