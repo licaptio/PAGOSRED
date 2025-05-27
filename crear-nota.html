@@ -33,9 +33,14 @@
       padding: 8px;
       resize: vertical;
     }
-    .nota textarea {
-      min-height: 200px;
-    }
+.nota textarea {
+  min-height: 200px;
+  white-space: pre;
+  overflow-x: auto;
+  font-family: monospace;
+  resize: both;
+}
+
     .nota button {
       margin-top: 20px;
       background: #C0392B;
@@ -127,5 +132,21 @@ window.location.href = "pagos-activos.html";
 
     window.guardarNota = guardarNota;
   </script>
+
+<script>
+  const textarea = document.getElementById('contenido');
+
+  function autoExpand(element) {
+    element.style.height = 'auto'; // Reinicia altura
+    element.style.height = (element.scrollHeight) + 'px'; // Ajusta según contenido
+  }
+
+  textarea.addEventListener('input', () => autoExpand(textarea));
+  textarea.addEventListener('paste', () => setTimeout(() => autoExpand(textarea), 10));
+
+  // Ajuste inicial por si se carga con contenido (edición)
+  window.addEventListener('load', () => autoExpand(textarea));
+</script>
+
 </body>
 </html>
