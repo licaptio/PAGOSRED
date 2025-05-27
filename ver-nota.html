@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ver Nota</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff5f5;
+      color: #7B241C;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .contenedor {
+      max-width: 800px;
+      margin: auto;
+      background-color: #ffeaea;
+      border-left: 6px solid #C0392B;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #C0392B;
+    }
+
+    .campo {
+      margin: 15px 0;
+    }
+
+    .etiqueta {
+      font-weight: bold;
+      color: #922B21;
+    }
+
+    .valor {
+      margin-top: 5px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #C0392B;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1>Detalles de la Nota</h1>
+    <div id="detalleNota">Cargando...</div>
+<div style="margin-top: 20px;">
+  <a href="index.html">← Volver al resumen</a><br><br>
+  <a id="editarBtn">✏️ Editar Nota</a>
+  <button id="archivarBtn" style="margin-left: 10px; background:#C0392B; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">
+    📦 Archivar
+  </button>
+</div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      'https://cvpbtjlupswbyxenugpz.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2cGJ0amx1cHN3Ynl4ZW51Z3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3MDIxOTQsImV4cCI6MjA2MzI3ODE5NH0.iiJsYM3TtaGPdeCtPcEXwAz3LfFc1uJGECEvOErvrqY'
+    );
+
+    const params = new URLSearchParams(window.location.search);
+    const titulo = params.get("titulo");
+    const detalleDiv = document.getElementById("detalleNota");
+
+    async function cargarNota() {
+      if (!titulo) {
+        detalleDiv.innerHTML = "<p style='color:red;'>No se especificó la nota.</p>";
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("notas")
+        .select("*")
+        .eq("titulo", titulo)
+        .single();
+
+      if (error || !data) {
+        detalleDiv.innerHTML = "<p style='color:red;'>No se encontró la nota.</p>";
+        console.error(error);
+        return;
+      }
+
+      detalleDiv.innerHTML = `
+        <div class="campo"><span class="etiqueta">Folio:</span><div class="valor">${data.folio || '-'}</div></div>
+        <div class="campo"><span class="etiqueta">Título:</span><div class="valor">${data.titulo}</div></div>
+        <div class="campo"><span class="etiqueta">Descripción:</span><div class="valor">${data.descripcion || '-'}</div></div>
+        <div class="campo"><span class="etiqueta">Fecha:</span><div class="valor">${data.fecha || '-'}</div></div>
+      `;
+    }
+
+
+// Enlace para editar
+document.getElementById("editarBtn").href = `editar-nota.html?titulo=${encodeURIComponent(titulo)}`;
+
+// Acción para archivar
+document.getElementById("archivarBtn").addEventListener("click", async () => {
+  const confirmar = confirm("¿Estás seguro de archivar esta nota?");
+  if (!confirmar) return;
+
+  const { error: updateError } = await supabase
+    .from("notas")
+    .update({ archivada: true })
+    .eq("titulo", titulo);
+
+  if (updateError) {
+    alert("❌ Error al archivar la nota.");
+    console.error(updateError);
+  } else {
+    alert("✅ Nota archivada correctamente.");
+    window.location.href = "index.html";
+  }
+});
+
+
+
+
+
+
+
+    cargarNota();
+  </script>
+</body>
+</html>

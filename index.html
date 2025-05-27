@@ -118,7 +118,7 @@
 
       contenedor.innerHTML = "";
       data.forEach(nota => {
-        contenedor.innerHTML += `<div class="tarjeta">${nota.titulo}</div>`;
+contenedor.innerHTML += `<a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" class="tarjeta">${nota.titulo}</a>`;
       });
     }
 
