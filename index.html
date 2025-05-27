@@ -73,6 +73,16 @@
 }
 
 
+@keyframes parpadeo {
+  0%, 100% { background-color: #fff8b3; }
+  50% { background-color: #fff176; }
+}
+
+.parpadeo {
+  animation: parpadeo 1s infinite;
+}
+
+
   </style>
 </head>
 <body>
@@ -101,7 +111,7 @@
     async function cargarResumen() {
       const { data, error } = await supabase
         .from("notas")
-        .select("titulo")
+.select("titulo, importante")
         .eq("archivada", false)
         .order("fecha", { ascending: false });
 
@@ -117,10 +127,43 @@
       }
 
       contenedor.innerHTML = "";
-      data.forEach(nota => {
-contenedor.innerHTML += `<a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" class="tarjeta">${nota.titulo}</a>`;
-      });
-    }
+data.forEach(nota => {
+  const claseImportancia = nota.importante ? 'parpadeo' : '';
+  const idCheckbox = `chk-${nota.titulo.replace(/\s+/g, '-')}`;
+
+  contenedor.innerHTML += `
+    <div class="tarjeta ${claseImportancia}" id="tarjeta-${idCheckbox}">
+      <a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" style="text-decoration:none; color:inherit;">
+        ${nota.titulo}
+      </a><br>
+<label style="font-weight:normal; display: flex; align-items: center; gap: 6px;">
+        <input type="checkbox" id="${idCheckbox}" ${nota.importante ? 'checked' : ''}>
+        Importante
+      </label>
+    </div>
+  `;
+
+  // Asociar evento al checkbox
+  setTimeout(() => {
+    const checkbox = document.getElementById(idCheckbox);
+    checkbox.addEventListener("change", async () => {
+      const nuevoValor = checkbox.checked;
+      const { error } = await supabase
+        .from("notas")
+        .update({ importante: nuevoValor })
+        .eq("titulo", nota.titulo);
+
+      if (error) {
+        alert("❌ Error al actualizar importancia");
+        console.error(error);
+        checkbox.checked = !nuevoValor;
+      } else {
+        const tarjeta = document.getElementById(`tarjeta-${idCheckbox}`);
+        tarjeta.classList.toggle("parpadeo", nuevoValor);
+      }
+    });
+  }, 0);
+});
 
     cargarResumen();
   </script>
