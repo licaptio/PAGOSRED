@@ -136,10 +136,7 @@ data.forEach(nota => {
       <a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" style="text-decoration:none; color:inherit;">
         ${nota.titulo}
       </a><br>
-<label style="font-weight:normal; display: flex; align-items: center; gap: 6px;">
-        <input type="checkbox" id="${idCheckbox}" ${nota.importante ? 'checked' : ''}>
-        Importante
-      </label>
+<input type="checkbox" id="${idCheckbox}" ${nota.importante ? 'checked' : ''}>
     </div>
   `;
 
