@@ -98,6 +98,8 @@
         <div class="campo"><span class="etiqueta">Descripción:</span><div class="valor">${data.descripcion || '-'}</div></div>
         <div class="campo"><span class="etiqueta">Fecha:</span><div class="valor">${data.fecha || '-'}</div></div>
         <div class="campo"><span class="etiqueta">Contenido:</span><div class="valor" style="white-space: pre-wrap; font-family: monospace;">${data.contenido || '-'}</div></div>
+<div class="campo"><span class="etiqueta">Extra:</span><div class="valor" style="white-space: pre-wrap; font-family: monospace;">${data.extra || '-'}</div></div>
+
       `;
 
       document.getElementById("editarBtn").href = `editar-nota.html?titulo=${encodeURIComponent(titulo)}`;
