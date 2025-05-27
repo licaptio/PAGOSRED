@@ -1,4 +1,4 @@
-<div style="text-align: center; margin-bottom: 20px;"<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -31,12 +31,11 @@
 <body>
   <h1>ACTIVOS PAGOS</h1>
 <div style="text-align: center; margin-bottom: 20px;">
-<div style="text-align: center; margin-bottom: 20px;">
   <a href="index.html"><button style="background:#C0392B; color:white; margin-right:10px;">🏠 Menú</button></a>
   <a href="crear-nota.html"><button style="margin-right:10px;">➕ Nueva Nota</button></a>
   <a href="pagos-archivados.html"><button>📦 Ver Archivadas</button></a>
 </div>
-</div>
+
 
 
 
@@ -76,7 +75,7 @@ const { data, error } = await supabase
       <div class="nota">
         <strong>${nota.titulo}</strong><br>
         <small>${new Date(nota.fecha).toLocaleString()} | Folio: ${nota.folio}</small><br><br>
-        <div>${nota.contenido}</div>
+        <pre style="white-space: pre-wrap; font-family: monospace;">${nota.contenido}</pre>
         <br>
         <button data-folio="${nota.folio}" class="editar-btn">Editar</button>
         <button data-folio="${nota.folio}" class="eliminar-btn" style="margin-left: 10px; background:#e74c3c;">Eliminar</button>
