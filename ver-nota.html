@@ -53,13 +53,13 @@
   <div class="contenedor">
     <h1>Detalles de la Nota</h1>
     <div id="detalleNota">Cargando...</div>
-<div style="margin-top: 20px;">
-  <a href="index.html">← Volver al resumen</a><br><br>
-  <a id="editarBtn">✏️ Editar Nota</a>
-  <button id="archivarBtn" style="margin-left: 10px; background:#C0392B; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">
-    📦 Archivar
-  </button>
-</div>
+    <div style="margin-top: 20px;">
+      <a href="index.html">← Volver al resumen</a><br><br>
+      <a id="editarBtn">✏️ Editar Nota</a>
+      <button id="archivarBtn" style="margin-left: 10px; background:#C0392B; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">
+        📦 Archivar
+      </button>
+    </div>
   </div>
 
   <script type="module">
@@ -97,37 +97,29 @@
         <div class="campo"><span class="etiqueta">Título:</span><div class="valor">${data.titulo}</div></div>
         <div class="campo"><span class="etiqueta">Descripción:</span><div class="valor">${data.descripcion || '-'}</div></div>
         <div class="campo"><span class="etiqueta">Fecha:</span><div class="valor">${data.fecha || '-'}</div></div>
+        <div class="campo"><span class="etiqueta">Contenido:</span><div class="valor" style="white-space: pre-wrap; font-family: monospace;">${data.contenido || '-'}</div></div>
       `;
+
+      document.getElementById("editarBtn").href = `editar-nota.html?titulo=${encodeURIComponent(titulo)}`;
     }
 
+    document.getElementById("archivarBtn").addEventListener("click", async () => {
+      const confirmar = confirm("¿Estás seguro de archivar esta nota?");
+      if (!confirmar) return;
 
-// Enlace para editar
-document.getElementById("editarBtn").href = `editar-nota.html?titulo=${encodeURIComponent(titulo)}`;
+      const { error: updateError } = await supabase
+        .from("notas")
+        .update({ archivada: true })
+        .eq("titulo", titulo);
 
-// Acción para archivar
-document.getElementById("archivarBtn").addEventListener("click", async () => {
-  const confirmar = confirm("¿Estás seguro de archivar esta nota?");
-  if (!confirmar) return;
-
-  const { error: updateError } = await supabase
-    .from("notas")
-    .update({ archivada: true })
-    .eq("titulo", titulo);
-
-  if (updateError) {
-    alert("❌ Error al archivar la nota.");
-    console.error(updateError);
-  } else {
-    alert("✅ Nota archivada correctamente.");
-    window.location.href = "index.html";
-  }
-});
-
-
-
-
-
-
+      if (updateError) {
+        alert("❌ Error al archivar la nota.");
+        console.error(updateError);
+      } else {
+        alert("✅ Nota archivada correctamente.");
+        window.location.href = "index.html";
+      }
+    });
 
     cargarNota();
   </script>
