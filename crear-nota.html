@@ -51,6 +51,15 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
+.nota textarea#extra {
+  background-color: #f9f9f9;
+  border-left: 4px solid #7f8c8d;
+  min-height: 100px;
+}
+
+
+
   </style>
 </head>
 <body>
@@ -62,6 +71,8 @@
 <div class="nota">
     <input id="titulo" placeholder="Título" type="text" />
     <textarea id="contenido" placeholder="Escribe tu nota..."></textarea>
+<textarea id="extra" placeholder="Datos extra como cuentas bancarias, referencias..."></textarea>
+
     <button onclick="guardarNota()">Guardar Nota</button>
   </div>
 
@@ -78,6 +89,8 @@
     async function guardarNota() {
       const titulo = document.getElementById('titulo').value;
       const contenido = document.getElementById('contenido').value;
+const extra = document.getElementById('extra').value;
+
       const fecha = new Date().toISOString();
 
       if (!titulo || !contenido) {
@@ -85,13 +98,15 @@
         return;
       }
 
-      const notaNueva = {
-        titulo,
-        contenido,
-        fecha,
-        archivada: false,
-        importante: false
-      };
+const notaNueva = {
+  titulo,
+  contenido,
+  extra, // ← ESTA LÍNEA FALTABA
+  fecha,
+  archivada: false,
+  importante: false
+};
+
 
       const { error: insertError } = await supabase.from('notas').insert([notaNueva]);
       if (insertError) {
@@ -126,6 +141,8 @@ window.location.href = "pagos-activos.html";
           editando = data;
           document.getElementById("titulo").value = data.titulo;
           document.getElementById("contenido").value = data.contenido;
+document.getElementById("extra").value = data.extra || "";
+
         }
       })();
     }
@@ -164,6 +181,13 @@ window.location.href = "pagos-activos.html";
 
   // Ajuste inicial al cargar
   window.addEventListener('load', () => autoExpand(textarea));
+
+const extraTextarea = document.getElementById('extra');
+extraTextarea.addEventListener('input', () => autoExpand(extraTextarea));
+window.addEventListener('load', () => autoExpand(extraTextarea));
+
+
+
 </script>
 
 
