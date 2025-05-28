@@ -72,6 +72,22 @@
   color: #922B21;
 }
 
+.tarjeta button {
+  background-color: #C0392B;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin: 4px 4px 0 0;
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.tarjeta button:hover {
+  background-color: #96281B;
+}
+
 
 @keyframes parpadeo {
   0%, 100% { background-color: #fff8b3; }
@@ -98,71 +114,99 @@
     <a href="pagos-archivados.html"><button>📦 Archivadas</button></a>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const supabase = createClient(
-      'https://cvpbtjlupswbyxenugpz.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2cGJ0amx1cHN3Ynl4ZW51Z3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3MDIxOTQsImV4cCI6MjA2MzI3ODE5NH0.iiJsYM3TtaGPdeCtPcEXwAz3LfFc1uJGECEvOErvrqY'
-    );
+  const supabase = createClient(
+    'https://cvpbtjlupswbyxenugpz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2cGJ0amx1cHN3Ynl4ZW51Z3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3MDIxOTQsImV4cCI6MjA2MzI3ODE5NH0.iiJsYM3TtaGPdeCtPcEXwAz3LfFc1uJGECEvOErvrqY'
+  );
 
-    const contenedor = document.getElementById("contenedorResumen");
+  const contenedor = document.getElementById("contenedorResumen");
 
-    async function cargarResumen() {
-      const { data, error } = await supabase
-        .from("notas")
-.select("titulo, importante")
-        .eq("archivada", false)
-        .order("fecha", { ascending: false });
+  async function cargarResumen() {
+    const { data, error } = await supabase
+      .from("notas")
+      .select("folio, titulo, importante")
+      .eq("archivada", false)
+      .order("fecha", { ascending: false });
 
-      if (error) {
-        contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar el resumen.</p>";
-        console.error(error);
-        return;
-      }
+    if (error) {
+      contenedor.innerHTML = "<p style='color:red;'>❌ Error al cargar el resumen.</p>";
+      console.error(error);
+      return;
+    }
 
-      if (!data || data.length === 0) {
-        contenedor.innerHTML = "<p>No hay notas activas.</p>";
-        return;
-      }
+    if (!data || data.length === 0) {
+      contenedor.innerHTML = "<p>No hay notas activas.</p>";
+      return;
+    }
 
-      contenedor.innerHTML = "";
-data.forEach(nota => {
-  const claseImportancia = nota.importante ? 'parpadeo' : '';
-  const idCheckbox = `chk-${nota.titulo.replace(/\s+/g, '-')}`;
+    contenedor.innerHTML = "";
 
-  contenedor.innerHTML += `
-    <div class="tarjeta ${claseImportancia}" id="tarjeta-${idCheckbox}">
-      <a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" style="text-decoration:none; color:inherit;">
-        ${nota.titulo}
-      </a><br>
-<input type="checkbox" id="${idCheckbox}" ${nota.importante ? 'checked' : ''}>
-    </div>
-  `;
+    data.forEach(nota => {
+      const claseImportancia = nota.importante ? 'parpadeo' : '';
+      const idCheckbox = `chk-${nota.titulo.replace(/\s+/g, '-')}`;
 
-  // Asociar evento al checkbox
-  setTimeout(() => {
-    const checkbox = document.getElementById(idCheckbox);
-    checkbox.addEventListener("change", async () => {
-      const nuevoValor = checkbox.checked;
-      const { error } = await supabase
-        .from("notas")
-        .update({ importante: nuevoValor })
-        .eq("titulo", nota.titulo);
+      contenedor.innerHTML += `
+        <div class="tarjeta ${claseImportancia}" id="tarjeta-${nota.folio}">
+          <a href="ver-nota.html?titulo=${encodeURIComponent(nota.titulo)}" style="text-decoration:none; color:inherit;">
+            ${nota.titulo}
+          </a><br>
+          <input type="checkbox" id="${idCheckbox}" ${nota.importante ? 'checked' : ''}><br><br>
+          <button onclick="editarNota('${nota.folio}')">✏️ Editar</button>
+          <button onclick="archivarNota('${nota.folio}')">📦 Archivar</button>
+        </div>
+      `;
 
-      if (error) {
-        alert("❌ Error al actualizar importancia");
-        console.error(error);
-        checkbox.checked = !nuevoValor;
-      } else {
-        const tarjeta = document.getElementById(`tarjeta-${idCheckbox}`);
-        tarjeta.classList.toggle("parpadeo", nuevoValor);
-      }
+      setTimeout(() => {
+        const checkbox = document.getElementById(idCheckbox);
+        checkbox.addEventListener("change", async () => {
+          const nuevoValor = checkbox.checked;
+          const { error } = await supabase
+            .from("notas")
+            .update({ importante: nuevoValor })
+            .eq("titulo", nota.titulo);
+
+          if (error) {
+            alert("❌ Error al actualizar importancia");
+            console.error(error);
+            checkbox.checked = !nuevoValor;
+          } else {
+            const tarjeta = document.getElementById(`tarjeta-${nota.folio}`);
+            tarjeta.classList.toggle("parpadeo", nuevoValor);
+          }
+        });
+      }, 0);
     });
-  }, 0);
-});
-}
-    cargarResumen();
-  </script>
+  }
+
+  // Funciones globales
+  window.editarNota = (folio) => {
+    window.location.href = `crear-nota.html?folio=${folio}`;
+  };
+
+  window.archivarNota = async (folio) => {
+    const confirmacion = confirm("¿Deseas archivar esta nota?");
+    if (!confirmacion) return;
+
+    const { error } = await supabase
+      .from("notas")
+      .update({ archivada: true })
+      .eq("folio", folio);
+
+    if (error) {
+      alert("❌ Error al archivar la nota");
+      console.error(error);
+      return;
+    }
+
+    const tarjeta = document.getElementById(`tarjeta-${folio}`);
+    if (tarjeta) tarjeta.remove();
+  };
+
+  cargarResumen();
+</script>
+
 </body>
 </html>
